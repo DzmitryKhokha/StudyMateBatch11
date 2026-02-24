@@ -30,12 +30,12 @@ public class LoginPage extends BaseUI {
     public WebElement submitBtn;
 
     @FindBy(xpath = "//div[@role='alert']")
-    public WebElement alert;
+    public WebElement errorMessage;
 
     @FindBy(xpath = "//p[text()='Invalid email or password']")
     public WebElement invalidCredentialsAlert;
 
-    public void login(String userEmail, String password) throws InterruptedException {
+    public void loginWithCorrectCredentials(String userEmail, String password) throws InterruptedException {
         String loginPageURL = "https://codewise.studymate.us/login";
         driver.get(loginPageURL);
 
@@ -46,5 +46,18 @@ public class LoginPage extends BaseUI {
         this.password.sendKeys(password);
         waitAndClick(submitBtn);
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("https://codewise.studymate.us/login")));
+    }
+
+    public void loginWithWrongCredentials(String wrongUserEmail, String wrongPassword) {
+        driver.get("https://codewise.studymate.us/login");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOf(this.email));
+
+        this.email.sendKeys(wrongUserEmail);
+        this.password.sendKeys(wrongPassword);
+        waitAndClick(submitBtn);
+
+        wait.until(ExpectedConditions.visibilityOf(this.errorMessage));
     }
 }

@@ -24,19 +24,8 @@ public class GroupTests extends BaseUI {
     }
 
     @Test
-    void deleteRandomGroupTest() throws InterruptedException {
-        loginPage.login(ConfigurationReader.getProperty("username"),
-                ConfigurationReader.getProperty("password"));
-
-        waitAndClick(mainPage.groupPage);
-        groupsPage.deleteRandomGroup();
-
-        Assertions.assertTrue(Driver.getDriver().getCurrentUrl().contains("groups"));
-    }
-
-    @Test
     void openGroupPage() throws InterruptedException {
-        loginPage.login(ConfigurationReader.getProperty("username"),
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
                 ConfigurationReader.getProperty("password"));
 
         waitAndClick(mainPage.groupPage);
@@ -46,7 +35,7 @@ public class GroupTests extends BaseUI {
 
     @Test
     void createGroupWithValidData() throws InterruptedException {
-        loginPage.login(ConfigurationReader.getProperty("username"),
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
                 ConfigurationReader.getProperty("password"));
 
         groupsPage.createNewGroup();
@@ -63,7 +52,7 @@ public class GroupTests extends BaseUI {
 
     @Test
     void editGroupDetails() throws InterruptedException {
-        loginPage.login(ConfigurationReader.getProperty("username"),
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
                 ConfigurationReader.getProperty("password"));
 
         jsClick(groupsPage.groupSubMenu);
@@ -85,8 +74,19 @@ public class GroupTests extends BaseUI {
     }
 
     @Test
+    void deleteRandomGroupTest() throws InterruptedException {
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+                ConfigurationReader.getProperty("password"));
+
+        waitAndClick(mainPage.groupPage);
+        groupsPage.deleteRandomGroup();
+
+        Assertions.assertTrue(Driver.getDriver().getCurrentUrl().contains("groups"));
+    }
+
+    @Test
     void editGroupDetailsWithoutSaving() throws InterruptedException {
-        loginPage.login(ConfigurationReader.getProperty("username"),
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
                 ConfigurationReader.getProperty("password"));
 
         waitUntilVisible(2, groupsPage.descr);
