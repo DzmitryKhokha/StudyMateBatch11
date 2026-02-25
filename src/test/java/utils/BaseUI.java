@@ -1,5 +1,6 @@
 package utils;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -66,6 +67,17 @@ public class BaseUI {
     public void waitUntilVisible(int seconds, WebElement element){
         new  WebDriverWait(Driver.getDriver(), Duration.ofSeconds(seconds))
                 .until(ExpectedConditions.visibilityOf(element));
+    }
+
+    /*
+     This method waits until the element appears on the page and becomes visible, then returns it.
+     findElement() tries to find the element immediately and fails if it’s not there and trows NoSuchElementException.
+     This wait method keeps checking until the element shows up (up to the timeout).
+     */
+
+    public WebElement waitUntilVisibleByLocator(int timeoutSeconds, By locator) {
+        WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(timeoutSeconds));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
 }
