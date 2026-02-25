@@ -37,6 +37,16 @@ public class BaseUI {
         js.executeScript("arguments[0].value = ''", element);
     }
 
+    public void sendKeys(WebElement element, String keys){
+        waitUntilVisable(20, element);
+        element.sendKeys(keys);
+    }
+
+    public void waitUntilVisable(int seconds, WebElement element){
+        new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(seconds))
+                .until(ExpectedConditions.visibilityOf(element));
+    }
+
     public void jsSendKeys(WebElement element, String value){
         waitUntilVisible(20, element);
         JavascriptExecutor js = (JavascriptExecutor) Driver.getDriver();
