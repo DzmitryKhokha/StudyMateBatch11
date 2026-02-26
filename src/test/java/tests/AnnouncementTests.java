@@ -1,11 +1,13 @@
 package tests;
 
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pages.AnnouncementsPage;
 import pages.LoginPage;
 import utils.BaseUI;
 import utils.ConfigurationReader;
@@ -17,55 +19,127 @@ import java.util.Random;
 
 public class AnnouncementTests extends BaseUI {
 
-
-    static WebDriver driver = Driver.getDriver();
     LoginPage loginPage = new LoginPage();
+    AnnouncementsPage announcementsPage = new AnnouncementsPage();
+    Faker faker = new Faker();
+    private String randomText;
 
+    @AfterEach
+    void tearDown() {
 
-    @Test
-    public void announcementDashboardClick() throws InterruptedException {
-        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"), ConfigurationReader.getProperty("password"));
-        explicitWait(20).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//li[normalize-space()='Announcements']")));
-        WebElement announcementTab = driver.findElement(By.xpath("//li[normalize-space()='Announcements']"));
-        waitAndClick(announcementTab);
+        Driver.closeDriver();
     }
 
     @Test
-    public void add_An_Announcement_Tab() throws InterruptedException {
-        announcementDashboardClick();
-        explicitWait(20).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//header[@class='css-1v74z38']/button")));
-        WebElement addNewAnnouncementTab = driver.findElement(By.xpath("//header[@class='css-1v74z38']/button"));
-        waitAndClick(addNewAnnouncementTab);
+    public void announcementDashboard() throws InterruptedException {
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+                ConfigurationReader.getProperty("password"));
+
+        waitAndClick(announcementsPage.announcementTab);
+        Assertions.assertTrue(Driver.getDriver().getCurrentUrl().contains("announcements"));
+    }
+
+    @Test
+    public void add_And_Delete_Same_Announcement() throws InterruptedException {
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+                ConfigurationReader.getProperty("password"));
+
+        waitAndClick(announcementsPage.announcementTab);
+        waitAndClick(announcementsPage.addNewAnnouncementTab);
 
         //add text
-        explicitWait(20).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@name='text']")));
-        WebElement text = driver.findElement(By.xpath("//textarea[@name='text']"));
-        sendKeys(text, "StudyMate text"); // potentially we can use Java faker
+        waitUntilVisible(30, announcementsPage.text);
+        randomText= faker.lorem().sentence(3);
+        announcementsPage.text.clear();
+        announcementsPage.text.sendKeys(randomText);
+        announcementsPage.text.sendKeys(Keys.TAB);
+        System.out.println("Inputted Random Text " + randomText);
 
         //click on dropdown to select groups Randomly by index
-        explicitWait(20).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='mui-component-select-groups']")));
-        WebElement dropdown = driver.findElement(By.xpath("//div[@id='mui-component-select-groups']"));
-        waitAndClick(dropdown);
+        waitAndClick(announcementsPage.dropdown);
 
+        //using listBox, because its single WebElement, while groupLists is a List
+        waitUntilVisible(10, announcementsPage.listBox);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//ul[@role='listbox']//li[@role='option']")));
+        //Randomly picking groups from drop down
+        List<WebElement> groupLists = announcementsPage.groupLists;
 
-        List<WebElement> groupLists = driver.findElements(By.xpath("//li[@role='option']"));
-
-//        for (WebElement groupList: groupLists){
-//            System.out.println(groupList.getText());
-//        }
         Random random = new Random();
         int randomIndex = random.nextInt(groupLists.size());
 
-        groupLists.get(randomIndex).click();
+        WebElement randomOption = groupLists.get(randomIndex);
+        waitUntilClickable(10, randomOption);
 
-        WebElement addButton = driver.findElement(By.xpath("//button[text()='Add']"));
-        waitAndClick(addButton);
+        // scroll into view (important for Material UI)
+        ((JavascriptExecutor) Driver.getDriver())
+                .executeScript("arguments[0].scrollIntoView(true);", randomOption);
+
+        // use JS click (more stable for MUI)
+        ((JavascriptExecutor) Driver.getDriver())
+                .executeScript("arguments[0].click();", randomOption);
+
+        waitAndClick( announcementsPage.addButton);
+
+        waitUntilVisible(5, announcementsPage.successMessage);
+        Assertions.assertTrue(announcementsPage.successMessage.isDisplayed());
+
+        WebElement threeDotsSingleElement = Driver.getDriver().findElement(By.xpath("//button[contains(@tabindex,'0') and contains(@aria-haspopup,'true')]"));
+        waitUntilVisible(10, threeDotsSingleElement);
+
+        //3 dots to -> click on Delete option
+        //click on Delete which text = randomtext which we just created
+        List<WebElement> icons = announcementsPage.threeDots;
+
+        for (WebElement icon : icons) {
+
+            //finding card inside the 3 dots icon
+            WebElement card = icon.findElement(By.xpath("./ancestor::div[contains(@class,'css-')]"));
+
+            if (card.getText().contains(randomText)) {
+
+                waitUntilClickable(10, icon);
+                icon.click();   // Normal click first
+                break;
+            }
+        }
+
+        waitAndClick( announcementsPage.deleteAnnouncement);
+        waitAndClick(announcementsPage.confirmationDelete);
+
+        waitUntilVisible(5, announcementsPage.deletedMessage);
+        Assertions.assertTrue(announcementsPage.deletedMessage.isDisplayed());
+
+    }
+
+    @Test
+    public void edit_Existing_Announcement() throws InterruptedException {
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+                ConfigurationReader.getProperty("password"));
+
+        waitAndClick(announcementsPage.announcementTab);
+
+        Thread.sleep(2000);
+
+        //3 dots is in List bc, i need to locate 1 box out of 4, this is picking index(0) the first box
+        //is hard code picked, I could have done same and as for group dropdown
+        List<WebElement> threeDotButtons = announcementsPage.threeDots;
+        threeDotButtons.get(0).click();
+
+        waitAndClick( announcementsPage.editButton);
+
+        waitAndClick(announcementsPage.text);
+
+        randomText= faker.lorem().sentence(3);
+        clearAndSendKeys(announcementsPage.text, randomText);
+        System.out.println("Updated Text " + randomText);
+
+        waitAndClick(announcementsPage.saveButton);
+
+        waitUntilVisible(5, announcementsPage.successMessage);
+        Assertions.assertTrue(announcementsPage.successMessage.isDisplayed());
 
 
     }
+
 }
 
