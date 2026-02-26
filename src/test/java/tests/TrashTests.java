@@ -20,7 +20,7 @@ public class TrashTests extends BaseUI {
     TrashPages trashPage = new TrashPages();
 
     @BeforeEach
-    void loginTeachersPage() throws InterruptedException {
+    void loginTrashPage() throws InterruptedException {
         loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
                 ConfigurationReader.getProperty("password"));
 
@@ -38,8 +38,6 @@ public class TrashTests extends BaseUI {
                 Driver.getDriver().getCurrentUrl().contains("deleted-items"),
                 "URL should contain deleted-items"
         );
-    }
 
 
-
-    }
+    }}
