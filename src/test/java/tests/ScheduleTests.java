@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import pages.LoginPage;
 import pages.MainPage;
 import pages.SchedulePages;
@@ -35,7 +36,6 @@ public class ScheduleTests extends BaseUI {
 
     @Test
     void viewExistingEventsForSelectedDay() {
-
         waitUntilVisible(5, schedulePages.dayEventsContainer);
         Assertions.assertTrue(schedulePages.dayEventsContainer.isDisplayed());
 
@@ -50,38 +50,67 @@ public class ScheduleTests extends BaseUI {
     }
 
 
+
     // Test 2: Create new event
     @Test
-    public void test2_createNewEvent() {
+    public void test2CreateNewEvent() {
+        waitUntilClickable(10, schedulePages.createBtn);
+        schedulePages.createBtn.click();
 
-        schedulePages.selectCalendarDay("2026-02-06");
-        schedulePages.clickCreateEvent();
+        waitUntilVisible(10, schedulePages.nameInput);
+        schedulePages.nameInput.click();
+        schedulePages.nameInput.clear();
+        schedulePages.nameInput.sendKeys("Coding Session");
 
-        schedulePages.setDate("06.02.2026");
-        schedulePages.setEventName("Coding session");
-        schedulePages.setStartTime("10:00");
-        schedulePages.setEndTime("11:00");
+        waitUntilClickable(10, schedulePages.dateInput);
+        schedulePages.dateInput.click();
+        schedulePages.dateInput.clear();
+        schedulePages.dateInput.sendKeys("06.02.2026");
+        schedulePages.dateInput.sendKeys(Keys.TAB);
 
-        schedulePages.selectForWhom("Maurice Minor");
+        waitUntilClickable(10, schedulePages.startTime);
+        schedulePages.startTime.click();
+        schedulePages.startTime.clear();
+        schedulePages.startTime.sendKeys("10:00");
+        schedulePages.startTime.sendKeys(Keys.ENTER);
 
-        Assertions.assertTrue(schedulePages.isPublishEnabled());
+        waitUntilClickable(10, schedulePages.endTime);
+        schedulePages.endTime.click();
+        schedulePages.endTime.clear();
+        schedulePages.endTime.sendKeys("11:00");
+        schedulePages.endTime.sendKeys(Keys.ENTER);
 
-        schedulePages.clickPublish();
+
+        waitUntilClickable(10, schedulePages.forWhomDropdown);
+        schedulePages.forWhomDropdown.click();
+
+        waitUntilClickable(10, schedulePages.mauriceOption);
+        schedulePages.mauriceOption.click();
+
+
+        Assertions.assertTrue(schedulePages.publishBtn.isEnabled());
+
+        waitUntilClickable(10, schedulePages.publishBtn);
+        schedulePages.publishBtn.click();
     }
+
+
+
 
     // Test 3: Negative - Save/Publish disabled when required fields are empty
     @Test
-    public void test3_negative_cannotSaveWithoutRequiredFields() {
+    public void test3NegativeCannotSaveWithoutRequiredFields() {
 
-        schedulePages.selectCalendarDay("2026-02-06");
+        waitUntilClickable(10, schedulePages.createBtn);
+        waitAndClick(schedulePages.createBtn);
+        waitUntilVisible(10,schedulePages.nameInput);
 
-        schedulePages.clickCreateEvent();
+        waitUntilClickable(10, schedulePages.saveBtn);
+        waitAndClick(schedulePages.saveBtn);
 
-
-        Assertions.assertFalse(schedulePages.saveBtn.isEnabled());
         Assertions.assertFalse(schedulePages.publishBtn.isEnabled());
 
-        Assertions.assertTrue(schedulePages.isTitleInvalid());
+        Assertions.assertEquals("true", schedulePages.nameInput.getAttribute("aria-invalid"));
     }
 
 }

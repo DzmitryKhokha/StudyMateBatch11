@@ -54,78 +54,16 @@ public class SchedulePages {
     @FindBy(id = "endTime")
     public WebElement endTime;
 
+    @FindBy(xpath = "//label[normalize-space()='For whom']/following::div[@role='button'][1]")
+    public WebElement forWhomDropdown;
+
+
     @FindBy(xpath = "//button[normalize-space()='Save']/following-sibling::button[normalize-space()='Publish']")
     public WebElement publishBtn;
 
     @FindBy(xpath = "//button[normalize-space()='Save']")
     public  WebElement saveBtn;
 
-    //methods
-
-    public void selectCalendarDay(String isoDate) {
-        Driver.getDriver()
-                .findElement(By.cssSelector("td[data-date='" + isoDate + "']"))
-                .click();
-    }
-
-    public void clickCreateEvent() {
-        createBtn.click();
-    }
-
-    public void setDate(String date_dd_mm_yyyy) {
-        dateInput.click();
-        dateInput.clear();
-        dateInput.sendKeys(date_dd_mm_yyyy);
-        dateInput.sendKeys(Keys.TAB);
-    }
-
-    public void setEventName(String name) {
-        nameInput.click();
-        nameInput.clear();
-        nameInput.sendKeys(name);
-        nameInput.sendKeys(Keys.TAB);
-    }
-
-    public void setStartTime(String time) {
-        startTime.click();
-        startTime.clear();
-        startTime.sendKeys(time);
-        startTime.sendKeys(Keys.ENTER);
-        startTime.sendKeys(Keys.TAB);
-    }
-
-    public void setEndTime(String time) {
-        endTime.click();
-        endTime.clear();
-        endTime.sendKeys(time);
-        endTime.sendKeys(Keys.ENTER);
-        endTime.sendKeys(Keys.TAB);
-    }
-
-    public void selectForWhom(String name) {
-        Driver.getDriver()
-                .findElement(By.xpath("//li[@role='option' and normalize-space()='" + name + "']"))
-                .click();
-    }
-
-    public void clickSave() {
-        saveBtn.click();
-    }
-
-    public void clickPublish() {
-        publishBtn.click();
-    }
-
-    public boolean isTitleInvalid() {
-        return "true".equalsIgnoreCase(nameInput.getAttribute("aria-invalid"));
-    }
-
-    public boolean isPublishEnabled() {
-        return publishBtn.isEnabled();
 
 
-    }
-    public void selectMaurice(){
-        mauriceOption.click();
-    }
 }

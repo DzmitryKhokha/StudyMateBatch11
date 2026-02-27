@@ -35,7 +35,7 @@ public class LoginPage extends BaseUI {
     @FindBy(xpath = "//p[text()='Invalid email or password']")
     public WebElement invalidCredentialsAlert;
 
-    public void loginWithCorrectCredentials(String userEmail, String password) throws InterruptedException {
+    public static void loginWithCorrectCredentials(String userEmail, String password) throws InterruptedException {
         String loginPageURL = "https://codewise.studymate.us/login";
         driver.get(loginPageURL);
 
