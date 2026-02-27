@@ -20,10 +20,8 @@ public class ScheduleTests extends BaseUI {
 
     @BeforeEach
     void setUp() throws InterruptedException {
-        loginPage.loginWithCorrectCredentials(
-                ConfigurationReader.getProperty("username"),
-                ConfigurationReader.getProperty("password")
-        );
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+                ConfigurationReader.getProperty("password"));
 
         waitAndClick(mainPage.schedule);
     }
