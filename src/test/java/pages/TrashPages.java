@@ -25,10 +25,10 @@ public class TrashPages {
     @FindBy(xpath = "//p[text()='Data deleted successfully']")
     public WebElement SuccessfullyDeletedConfirmation;
 
-    @FindBy(xpath = ".//td[last()]//*[name()='svg'][1]")
+    @FindBy(xpath = "//tbody/tr/td[last()]//*[name()='svg'][1]")
     public List<WebElement> recoverData;
 
-    @FindBy(xpath = ".//td[last()]//*[name()='svg'][2]")
+    @FindBy(xpath = "//tbody/tr/td[last()]//*[name()='svg'][2]")
     public List<WebElement> deleteForeverButtons;
 
     @FindBy(xpath = "//tbody/tr")
@@ -37,6 +37,17 @@ public class TrashPages {
     public By firstRowNameCell(){
         return By.xpath("//tbody/tr[1]/td[1]");
     }
+
+    public WebElement getRandomRow() {
+
+        int size = rows.size();
+
+        int randomIndex = new java.util.Random().nextInt(size);
+
+        return rows.get(randomIndex);
+    }
+
+
 
 
 }

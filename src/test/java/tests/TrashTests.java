@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.LoginPage;
 import pages.MainPage;
@@ -25,13 +27,6 @@ public class TrashTests extends BaseUI {
     MainPage mainPage = new MainPage();
     TrashPages trashPages = new TrashPages();
 
-    @BeforeEach
-    void loginTrashPage() throws InterruptedException {
-        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
-                ConfigurationReader.getProperty("password"));
-
-        waitAndClick(mainPage.trash);
-    }
 
     @AfterEach
     void tearDown() {
@@ -39,49 +34,91 @@ public class TrashTests extends BaseUI {
     }
 
 @Test
-    public void recoverAnyRowShouldDisappearFromTrash(){
+    public void openTrashPage() throws InterruptedException {
 
-    // login
-    loginPage.loginWithCorrectCredentials(
-            ConfigurationReader.getProperty("username"),
-            ConfigurationReader.getProperty("password")
-    );
+    loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+            ConfigurationReader.getProperty("password"));
 
-    // open Trash
-    Driver.getDriver().get(
-            ConfigurationReader.getProperty("url") + "/admin/deleted-items"
-    );
+    waitAndClick(mainPage.trash);
 
-    waitUntilVisible(20, trashPages.trashHeader);
+    Assertions.assertTrue(Driver.getDriver().getCurrentUrl().contains("deleted-items"));
 
-    // убедимся, что есть строки
-    assertTrue(trashPages.rows.size() > 0,
-            "Trash must have at least one row");
+}
 
-    int beforeCount = trashPages.rows.size();
+@Test
+public void DeleteForeverRowShouldShowDeletedConfirmation() throws InterruptedException {
 
-    // выбираем случайную строку по индексу
+    loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+            ConfigurationReader.getProperty("password"));
+
+    waitAndClick(mainPage.trash);
+    waitUntilVisible(10, trashPages.trashHeader);
+    assertTrue(trashPages.trashHeader.isDisplayed());
+
+
+    new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10))
+            .until(driver -> trashPages.rows.size() > 0);
+
+    assertTrue(trashPages.rows.size() > 0, "Trash must have at least one row");
+
+    // choose random row index
     int randomIndex = new Random().nextInt(trashPages.rows.size());
 
-    // кликаем delete forever в этой строке
+    // click delete forever
     waitAndClick(trashPages.deleteForeverButtons.get(randomIndex));
 
-    // ждём уменьшения количества строк
-    new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(20))
-            .until(driver -> trashPages.rows.size() < beforeCount);
+    // wait confirmation
+    waitUntilVisible(10, trashPages.SuccessfullyDeletedConfirmation);
 
-    // проверяем, что строк стало меньше
-    assertTrue(trashPages.rows.size() < beforeCount,
-            "Row count should decrease after delete forever");
+    // assert confirmation text
+    assertTrue(trashPages.SuccessfullyDeletedConfirmation.getText().contains("Data deleted successfully"),
+            "Deleted confirmation message should appear after delete forever");
+
 }
-}
+    @Test
+    public void recoverAnyRowShouldDisappearFromTrash() throws InterruptedException {
+
+        loginPage.loginWithCorrectCredentials(ConfigurationReader.getProperty("username"),
+                ConfigurationReader.getProperty("password"));
+
+        waitAndClick(mainPage.trash);
+        waitUntilVisible(10, trashPages.trashHeader);
+        assertTrue(trashPages.trashHeader.isDisplayed());
 
 
+        new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10))
+                .until(d -> trashPages.deleteForeverButtons.size() > 0);
 
+        // assert at least one row
+        assertTrue(trashPages.deleteForeverButtons.size() > 0, "Trash must have at least one row");
 
+        // choose random row index
+        int randomIndex = new Random().nextInt(trashPages.rows.size());
 
+        // click recover (your existing element)
+        waitAndClick(trashPages.recoverData.get(randomIndex));
 
+        // wait confirmation
+        waitUntilVisible(10, trashPages.dataSuccessfullyRecoveredConfirmation);
 
-
+        // assert confirmation text
+        assertTrue(trashPages.dataSuccessfullyRecoveredConfirmation.getText().contains("Data successfully recovered"),
+                "Recovered confirmation message should appear after recover");
+    }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
