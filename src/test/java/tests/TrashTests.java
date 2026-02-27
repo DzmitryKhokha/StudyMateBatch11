@@ -32,7 +32,11 @@ public class TrashTests extends BaseUI {
         Driver.closeDriver();
     }
 
+@Test
+    public void recoverAnyRowFromTrash(){
 
+
+}
 
 
 

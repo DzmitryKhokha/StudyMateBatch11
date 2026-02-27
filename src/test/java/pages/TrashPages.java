@@ -1,5 +1,6 @@
 package pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,4 +30,13 @@ public class TrashPages {
 
     @FindBy(xpath = ".//td[last()]//*[name()='svg'][2]")
     public List<WebElement> deletePermanently;
+
+    @FindBy(xpath = "//tbody/tr")
+    public List<WebElement>rows;
+
+    public By firstRowNameCell(){
+        return By.xpath("//tbody/tr[1]/td[1]");
+    }
+
+
 }
