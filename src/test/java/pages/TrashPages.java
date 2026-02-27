@@ -29,7 +29,7 @@ public class TrashPages {
     public List<WebElement> recoverData;
 
     @FindBy(xpath = ".//td[last()]//*[name()='svg'][2]")
-    public List<WebElement> deleteForeverButton;
+    public List<WebElement> deleteForeverButtons;
 
     @FindBy(xpath = "//tbody/tr")
     public List<WebElement>rows;
