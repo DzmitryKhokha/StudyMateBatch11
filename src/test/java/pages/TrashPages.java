@@ -15,12 +15,14 @@ public class TrashPages {
         PageFactory.initElements(driver, this);
     }
 
+    @FindBy(xpath = "//h2[text()='Trash']")
+    public WebElement trashHeader;
+
     @FindBy(xpath = "//p[text()='Data successfully recovered']")
-    public WebElement dataSuccessfullyRecoveredText;
+    public WebElement dataSuccessfullyRecoveredConfirmation;
 
     @FindBy(xpath = "//p[text()='Data deleted successfully']")
-    public WebElement SuccessfullyDeletedText;
-
+    public WebElement SuccessfullyDeletedConfirmation;
 
     @FindBy(xpath = ".//td[last()]//*[name()='svg'][1]")
     public List<WebElement> recoverData;

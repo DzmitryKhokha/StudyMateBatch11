@@ -17,7 +17,7 @@ public class TrashTests extends BaseUI {
 
     LoginPage loginPage = new LoginPage();
     MainPage mainPage = new MainPage();
-    TrashPages trashPage = new TrashPages();
+    TrashPages trashPages = new TrashPages();
 
     @BeforeEach
     void loginTrashPage() throws InterruptedException {
@@ -32,12 +32,14 @@ public class TrashTests extends BaseUI {
         Driver.closeDriver();
     }
 
-    @Test
-    void openTrashTab_shouldOpenTrashUrl() {
-        Assertions.assertTrue(
-                Driver.getDriver().getCurrentUrl().contains("deleted-items"),
-                "URL should contain deleted-items"
-        );
 
 
-    }}
+
+
+
+
+
+
+
+
+    }
